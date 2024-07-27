@@ -1,0 +1,19 @@
+services:
+  pocketbase:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pocketbase
+    ports:
+      - '8080:8080'
+    volumes:
+      - ${PB_DATA}:/pb/pb_data
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pocketbase.rule=Host(`${HOST_POCKETBASE}`)
+      - traefik.http.routers.pocketbase.entrypoints=https
+      - traefik.http.routers.pocketbase.tls.certresolver=${RESOLVER}
+      - traefik.http.services.pocketbase.loadbalancer.server.port=8080
+    restart: unless-stopped
